@@ -59,7 +59,7 @@ obj2["setHeightInCm"] = function(cm) { return this.height = cm; };
 So now:
 
 ```sh
-> obj2.setHeightInCm(150);
+> obj2.setHeightInCm(150)
   150
 > obj2.height
   150
@@ -91,7 +91,7 @@ In other words, when we call `Animal()` with the `new` keyword, `this` is set to
 We can see that the type of the returned object is "object":
 
 ```sh
-> var a = new Animal(true, new Date(2010,1,1), "Spot");
+> var a = new Animal(true, new Date(2010,1,1), "Spot")
 > typeof a
   "object"
 > a.constructor
@@ -106,14 +106,17 @@ We can see that the type of the returned object is "object":
 *Everything* created with the `new` operator is a type of "object":
 
 ```sh
-> var s = new String("hola!");
+> var s = new String("hola!")
+  undefined
 > typeof s
   "object"
-> var a = new Array();
+> var a = new Array()
+  undefined
 > typeof a
   "object"
-> var n = new Number(3);
-> n.valueOf();
+> var n = new Number(3)
+  undefined
+> n.valueOf()
   3
 > typeof n
   "object"
@@ -124,10 +127,12 @@ But there are **primitives** in JavaScript, too. (Primitives are the simplest fo
 Complex types (objects) are types that contain primitive or other complex types, such as `Array()`, `Date()`, and `RegEx()` (for regular expressions). Complex types are sometimes called "composite" types for this reason.
 
 ```sh
-> var i = 7;
+> var i = 7
+  undefined
 > typeof i
   "number"
-> var t = true;
+> var t = true
+  undefined
 > typeof t
   "boolean"
 ```
@@ -216,9 +221,12 @@ var lArr = ['a','b','c']; // Literal
 Primitive values are copied. With objects, a pointer to the object is copied rather than the object itself. So with primitive values we can do this:
 
 ```sh
-> var x = 1;
-> var y = x;
-> x = 2;
+> var x = 1
+  undefined
+> var y = x
+  undefined
+> x = 2
+  2
 > y
   1
 ```
@@ -228,9 +236,12 @@ So the *value* of `x` was copied to `y`. When we later changed the value of `x`,
 But compare this to what happens when we try the same thing with an object:
 
 ```sh
-> var o = { x: 1 };
-> var p = o;
-> o.x = 2;
+> var o = { x: 1 }
+  undefined
+> var p = o
+  undefined
+> o.x = 2
+  2
 > p.x
   2
 ```
@@ -253,7 +264,7 @@ Now look:
 ```sh
 > var a = [1, 2, 3]
   undefined
-> var p = 7;
+> var p = 7
   undefined
 > doubler(a, p)
   14         // doubled inside doubler
@@ -284,9 +295,9 @@ In JavaScript, `===` and `!==` are *strict* comparison operators. This means:
 Now that we have an `Animal()` constructor, we can make unique instances of animals:
 
 ```sh
-> var rover = new Animal(true, new Date(2010,3,1), "Rover");
+> var rover = new Animal(true, new Date(2010,3,1), "Rover")
   undefined
-> var spot = new Animal(false, new Date(2010,1,3), "Spot");
+> var spot = new Animal(false, new Date(2010,1,3), "Spot")
   undefined
 > rover.name
   "Rover"
@@ -311,7 +322,9 @@ Now let&apos;s see what happens with our previously defined animals, Rover and S
 > spot.isAlive
   false
 > rover.kill()
+  undefined
 > spot.reanimate()
+  undefined
 > rover.isAlive
   false
 > spot.isAlive
@@ -321,7 +334,7 @@ Now let&apos;s see what happens with our previously defined animals, Rover and S
 We can even add functionality to built-in objects. For example, we could add a `map` method that takes a function and applies it to each member of the array, and then returns a new array:
 
 ```js
-Array.prototype.map = function(f) {
+Array.prototype.mapper = function(f) {
   var len = this.length;
   var a = [];
   for (var i = 0; i < len; ++i) {
@@ -334,12 +347,208 @@ Array.prototype.map = function(f) {
 Now we can test it:
 
 ```sh
-> var a = [1,2,3];
-  [1, 2, 3]
-> var dbl = function(i) { return i * 2; };
-  function (i) { return i * 2; }
-> a.map(dbl);
+> var a = [1, 2, 3]
+  undefined
+> var dbl = function(i) { return i * 2; }
+  undefined
+> a.mapper(dbl)
   [2, 4, 6]
 ```
 
 But we should generally avoid this sort of modification of built-in objects. That said, there is a library&mdash;called *[Sugar](http://sugarjs.com/)*&mdash;that does just this. [Sugar provides a good overview of the pros and cons of modifying native JavaScript objects](http://sugarjs.com/native). Take a look.
+
+## Use of `instanceof`
+
+If we use a constructor function to create a new Object, then when we check its type with `typeof` we find that it is of type "object". How can we find out whether it was constructed with the constructor for, say, `Animal()` rather than as a generic `Object()`?
+
+For this, we have `instanceof`:
+
+```sh
+> var a = new Animal(false, null, "Marv")
+  undefined
+> a instanceof Object
+  true
+> a instanceof Animal
+  true
+> a instanceof Array
+  false
+```
+
+Note that an Animal is also a type of Object (every complex type is), so `instanceof` also returns true for `Object()`.
+
+But be careful with primitives! They are not instances of their respective constructors even though the constructor is used to make them:
+
+```sh
+> var p = 5
+  undefined
+> p
+  5
+> p instanceof Number
+  false
+
+> var o = new Number(5)
+  undefined
+> o
+  Number {}
+> o instanceof Number
+  true
+```
+
+But it&apos;s the `new` keyword that creates the `Number()` object rather than a primitive:
+
+```sh
+> var q = Number(5)
+  undefined
+> q
+  5
+> q instanceof Number
+  false
+```
+
+That is because the `new` keyword *binds* `this` in the  constructor function to the constructor itself rather than to the calling context.
+
+## Everything is mutable
+
+Pretty much everything in JavaScript is mutable, so I can also mutate individual objects. For example, I can take my `rover` Animal from above and add a `playDead` method:
+
+```sh
+> rover.playDead = function() { console.log("Urk!"); }
+  undefined
+```
+
+Now I can call this method on `rover`, but not on `spot`. Had I added the method to the `Animal()` prototype instead, then it would be available on **both** animals:
+
+```sh
+> rover.playDead()
+  Urk!
+  undefined
+> spot.playDead()
+  TypeError: undefined is not a function
+```
+
+Of course, we can do this with an instance of a native object as well:
+
+```sh
+> var a = [1, 2, 3]
+  undefined
+> a.mapper = function(f) {
+    var len = this.length;
+    var a = [];
+    for (var i = 0; i < len; ++i) {
+      a[i] = f(this[i]);
+    }
+    return a;
+  }
+  function (f) {
+    var len = this.length;
+    var a = [];
+    for (var i = 0; i < len; ++i) {
+      a[i] = f(this[i]);
+    }
+    return a;
+  }
+> function dbl(i) { return i * 2; }
+  undefined
+> a.mapper(dbl)
+  [4, 5, 6]
+
+> var b = [7, 8, 9]
+  undefined
+> b.mapper(dbl)
+  TypeError: undefined is not a function
+```
+
+## A few more things about objects (before we get into the hard stuff)
+
+Objects can contain other types of Objects, which can contain other types of Objects, and so on to an arbitrary depth.
+
+For example, we can have a hash of hashes of hashes:
+
+```js
+var colors = {
+  red: {
+    tints: {
+      pink: "#FFC0CB",
+      salmon: "#FF91A4",
+      coral: "#F88379"
+    },
+    shades: {
+      scarlet: "#FF2400",
+      desire: "#EA3C53",
+      lust: "#E62020"
+    }
+  },
+  green: {
+    tints: {
+      artichoke: "#8F9779",
+      asparagus: "#87A96B",
+      fern: "#71BC78"
+    },
+    shades: {
+      pine: "#01796F",
+      teal: "#008080",
+      army: "#4B5320"
+    }
+  }
+};
+```
+
+We can access the properties of our `colors` hash using dot or bracket notation (or a combination thereof):
+
+```sh
+> colors.red['tints']
+  Object {pink: "#FFC0CB", salmon: "#FF91A4", coral: "#F88379"}
+> colors["red"].tints.pink
+  "#FFC0CB"
+> colors["green"]["shades"]["teal"]
+  "#008080"
+> colors.green.tints.fern
+  "#71BC78"
+```
+
+We can have an array of arrays (called a "multidimensional array"):
+
+```js
+var table = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
+```
+
+We can access via bracket notation by index:
+
+```sh
+> var row = 1
+  undefined
+> var col = 2
+  undefined
+> table[row][col]
+  6
+> table[2][1]
+  8
+```
+
+And, of course, we can mix the two:
+
+```js
+var friends = [
+  { name: "Bob" },
+  { name: "Ted" },
+  { name: "Carol" },
+  { name: "Alice" }
+]
+```
+
+And access them in typical ways:
+
+```sh
+> friends[1]
+  Object {name: "Ted"}
+> friends['1']
+  Object {name: "Ted"}
+> friends[0].name
+  "Bob"
+> friends["3"].name
+  "Alice"
+```
