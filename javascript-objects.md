@@ -30,7 +30,7 @@ obj2["male"] = false;
 
 This gives us:
 
-```
+```sh
   Object {name: "Jeff", height: 167, male: true}
   Object {name: "Sally", height: 170, male: false}
 ```
@@ -45,7 +45,7 @@ obj.getSex = function() { return this.male ? "Male" : "Female"; };
 
 This yields:
 
-```
+```sh
 > obj.getSex()
   "Male"
 ```
@@ -58,7 +58,7 @@ obj2["setHeightInCm"] = function(cm) { return this.height = cm; };
 
 So now:
 
-```
+```sh
 > obj2.setHeightInCm(150);
   150
 > obj2.height
@@ -90,7 +90,7 @@ In other words, when we call `Animal()` with the `new` keyword, `this` is set to
 
 We can see that the type of the returned object is "object":
 
-```
+```sh
 > var a = new Animal(true, new Date(2010,1,1), "Spot");
 > typeof a
   "object"
@@ -105,7 +105,7 @@ We can see that the type of the returned object is "object":
 
 *Everything* created with the `new` operator is a type of "object":
 
-```
+```sh
 > var s = new String("hola!");
 > typeof s
   "object"
@@ -121,7 +121,7 @@ We can see that the type of the returned object is "object":
 
 But there are primitives in JavaScript, too:
 
-```
+```sh
 > var i = 7;
 > typeof i
   "number"
@@ -160,7 +160,7 @@ var boxedStr = new String("hello"); // Boxed
 var str = "hello"; // Primitive
 ```
 
-```
+```sh
 > boxedBool
   Boolean {}
 > typeof boxedBool
@@ -194,7 +194,7 @@ var str = "hello"; // Primitive
 
 Now that we have an `Animal()` constructor, we can make unique instances of animals:
 
-```
+```sh
 > var rover = new Animal(true, new Date(2010,3,1), "Rover");
   undefined
 > var spot = new Animal(true, new Date(2010,1,3), "Spot");
