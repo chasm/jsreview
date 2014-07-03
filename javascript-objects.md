@@ -265,7 +265,7 @@ Now look:
 
 Our array `a` changed *outside* the call to `doubler`, but while primitive `p` was doubled inside `doubler` (as shown by the return value), the value of `p` *outside* the doubler call was unchanged.
 
-This is because the array object `a` was **passed by reference*, while the primitive `p` was **passed by value** (copied).
+This is because the array object `a` was **passed by reference**, while the primitive `p` was **passed by value** (copied).
 
 ## Strict comparison operators
 
