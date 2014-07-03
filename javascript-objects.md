@@ -119,7 +119,9 @@ We can see that the type of the returned object is "object":
   "object"
 ```
 
-But there are primitives in JavaScript, too:
+But there are **primitives** in JavaScript, too. (Primitives are the simplest form of a type, considered irreducible to simpler types.)
+
+Complex types (objects) are types that contain primitive or other complex types, such as `Array()`, `Date()`, and `RegEx()` (for regular expressions). Complex types are sometimes called "composite" types for this reason.
 
 ```sh
 > var i = 7;
@@ -190,6 +192,93 @@ var str = "hello"; // Primitive
   "string"
 ```
 
+Note that except for the primitive types (number, boolean, and string), the literal methods for object creation work exactly the same as using `new` with the object constructor:
+
+```js
+var oArr = new Array('a', 'b', 'c'); // With `new`
+var lArr = ['a','b','c']; // Literal
+```
+
+```sh
+> oArr
+  ["a", "b", "c"]
+> lArr
+  ["a", "b", "c"]
+
+> typeof oArr
+  "object"
+> typeof lArr
+  "object"
+```
+
+## By value or by reference
+
+Primitive values are copied. With objects, a pointer to the object is copied rather than the object itself. So with primitive values we can do this:
+
+```sh
+> var x = 1;
+> var y = x;
+> x = 2;
+> y
+  1
+```
+
+So the *value* of `x` was copied to `y`. When we later changed the value of `x`, the value of `y` remained unchanged.
+
+But compare this to what happens when we try the same thing with an object:
+
+```sh
+> var o = { x: 1 };
+> var p = o;
+> o.x = 2;
+> p.x
+  2
+```
+
+Note that when we changed `o.x`, then `p.x` changed as well. That is because `o` and `p` point to *the same object.* When we set `var p = o;` only the *pointer* to that object was copied, not the object itself.
+
+What happens when we pass objects into functions?
+
+```js
+var doubler = function(arr, prim) {
+  var len = arr.length;
+  for (var i = 0; i < len; ++i) { arr[i] *= 2; }
+  prim = prim * 2;
+  return prim;
+}
+```
+
+Now look:
+
+```sh
+> var a = [1, 2, 3]
+  undefined
+> var p = 7;
+  undefined
+> doubler(a, p)
+  14         // doubled inside doubler
+> a
+  [2, 4, 6]  // doubled outside doubler
+> p
+  7          // unchanged outside doubler
+```
+
+Our array `a` changed *outside* the call to `doubler`, but while primitive `p` was doubled inside `doubler` (as shown by the return value), the value of `p` *outside* the doubler call was unchanged.
+
+This is because the array object `a` was **passed by reference*, while the primitive `p` was **passed by value** (copied).
+
+## Strict comparison operators
+
+In JavaScript, `===` and `!==` are *strict* comparison operators. This means:
+
+* Two strings are *strictly* equal when they have the same sequence of characters exactly
+* Two numbers are *strictly* equal when they are numerically equal (have the same number value)
+  * NaN (not a number) is not equal to anything, including NaN!
+  * Positive and negative zeros are equal to one another
+* Two Boolean operands are strictly equal if both are true or both are false
+* Two objects are strictly equal *only if they reference the same Object*
+* Null and Undefined types not strictly equal (but will return true if compared with `==`)
+
 ## More on custom objects
 
 Now that we have an `Animal()` constructor, we can make unique instances of animals:
@@ -197,7 +286,7 @@ Now that we have an `Animal()` constructor, we can make unique instances of anim
 ```sh
 > var rover = new Animal(true, new Date(2010,3,1), "Rover");
   undefined
-> var spot = new Animal(true, new Date(2010,1,3), "Spot");
+> var spot = new Animal(false, new Date(2010,1,3), "Spot");
   undefined
 > rover.name
   "Rover"
@@ -205,4 +294,52 @@ Now that we have an `Animal()` constructor, we can make unique instances of anim
   "Spot"
 ```
 
-Sweet!
+Sweet! But what if I want to add a new method to both `rover` and `spot`?
+
+We can do so by adding our methods to the `prototype` for the `Animal` constructor:
+
+```js
+Animal.prototype.kill = function() { this.isAlive = false; };
+Animal.prototype.reanimate = function() { this.isAlive = true; };
+```
+
+Now let&apos;s see what happens with our previously defined animals, Rover and Spot:
+
+```sh
+> rover.isAlive
+  true
+> spot.isAlive
+  false
+> rover.kill()
+> spot.reanimate()
+> rover.isAlive
+  false
+> spot.isAlive
+  true
+```
+
+We can even add functionality to built-in objects. For example, we could add a `map` method that takes a function and applies it to each member of the array, and then returns a new array:
+
+```js
+Array.prototype.map = function(f) {
+  var len = this.length;
+  var a = [];
+  for (var i = 0; i < len; ++i) {
+    a[i] = f(this[i]);
+  }
+  return a;
+}
+```
+
+Now we can test it:
+
+```sh
+> var a = [1,2,3];
+  [1, 2, 3]
+> var dbl = function(i) { return i * 2; };
+  function (i) { return i * 2; }
+> a.map(dbl);
+  [2, 4, 6]
+```
+
+But we should generally avoid this sort of modification of built-in objects. That said, there is a library&mdash;called *[Sugar](http://sugarjs.com/)*&mdash;that does just this. [Sugar provides a good overview of the pros and cons of modifying native JavaScript objects](http://sugarjs.com/native). Take a look.
