@@ -2,19 +2,19 @@
 
 We can create a new Object thusly:
 
-```javascript
+```js
 var obj = new Object();
 ```
 
 or
 
-```javascript
+```js
 var obj2 = {};
 ```
 
 We can then add key-value pairs to the object:
 
-```javascript
+```js
 obj.name = "Jeff";
 obj.height = 167;
 obj.male = true;
@@ -22,7 +22,7 @@ obj.male = true;
 
 or
 
-```javascript
+```js
 obj2["name"] = "Sally";
 obj2["height"] = 170;
 obj2["male"] = false;
@@ -39,7 +39,7 @@ We can see that we end up in the same place, namely, with an object with key-val
 
 Values can also be functions, so we can add a method to `obj` thusly:
 
-```javascript
+```js
 obj.getSex = function() { return this.male ? "Male" : "Female"; };
 ```
 
@@ -52,7 +52,7 @@ This yields:
 
 When a function is assigned to an object property like this, we call that function a *method*. Then intent of the method is to operate on the object that contains it. Here's another example:
 
-```javascript
+```js
 obj2["setHeightInCm"] = function(cm) { return this.height = cm; };
 ```
 
@@ -67,7 +67,7 @@ So now:
 
 We can also create an object using a constructor function. The constructor acts as a kind of "class" in JavaScript:
 
-```javascript
+```js
 var Animal = function(isAlive, bornOn, name) {
   this.isAlive = isAlive;
   this.bornOn = bornOn;
@@ -152,7 +152,7 @@ There is also a `Math` object, but you can't call `new` on it. You use it for bu
 
 Using `Number()`, `String()`, or `Boolean()` is what we call "boxing primitives." We can return a complex object wrapped around the primitive value, or the primitive value itself:
 
-```javascript
+```js
 var boxedBool = new Boolean(true); // Boxed
 var bool = true; // Primitive
 
