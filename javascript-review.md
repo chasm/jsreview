@@ -1,6 +1,62 @@
-# JavaScript Objects
+# JavaScript Review
 
-We can create a new Object thusly:
+## Expressions vs. statements
+
+In JavaScript, an *expression* returns a value:
+
+```sh
+> 5
+  5
+> 5 + 7
+  12
+> Math.sqrt(16)
+  4
+> 1 === 1.0 ? "yes" : "no"
+  'yes'
+```
+
+A *statement* may or may not return a value. So all expressions are statements, but not all statements are expressions. Statements are generally used to perform an action.
+
+An example of a statement is the `if` statement:
+
+```js
+var x;
+if (1 === 1.0) {
+  x = "yes";
+} else {
+  x = "no";
+}
+```
+
+The `if` statement above does not return a value, so we must assign the value inside the branches. The *conditional operator*, also called the *ternary operator*, **does** return a value, so we could have written the above thus:
+
+```js
+var x = 1 === 1.0 ? "yes" : "no";
+```
+
+## Parameters vs. arguments
+
+Most JavaScript programmers (ore programmers in general) use the terms "parameters" and "arguments" interchangeably; however, they are not the same thing.
+
+The parameters are the *specification* of inputs to a function. For example, in the following code, the parameters are `x` and `y`:
+
+```js
+var show = function(x, y) { console.log(x, y); };
+```
+
+When we call this function, we will pass in specific *arguments*:
+
+```sh
+> show(1, 2)
+  1 2
+  undefined
+```
+
+In this situation, `1` and `2` are the *arguments* to the function with *parameters* `x` and `y`, thus `1` is assigned to `x` and `2` to `y`.
+
+## Objects
+
+We can create a new Object thus:
 
 ```js
 var obj = new Object();
@@ -37,7 +93,7 @@ This gives us:
 
 We can see that we end up in the same place, namely, with an object with key-value pairs.
 
-Values can also be functions, so we can add a method to `obj` thusly:
+Values can also be functions, so we can add a method to `obj` thus:
 
 ```js
 obj.getSex = function() { return this.male ? "Male" : "Female"; };
@@ -456,6 +512,52 @@ Of course, we can do this with an instance of a native object as well:
   undefined
 > b.mapper(dbl)
   TypeError: undefined is not a function
+```
+
+## Resolving object properties
+
+When we call an object property using either dot or bracket notation, how does the JavaScript interpreter handle it?
+
+As we discussed above, each object has a prototype. We also have inheritance, with all objects inheriting from the base `Object()`. So every type of object, e.g., `Array()`, has both its own prototype (`Array.prototype`) and the Object prototype (`Object.prototype`).
+
+When we call a property on an object in JavaScript, the interpreter first looks for that property on the instance itself. If the property does not exist on the instance, then it looks up the tree to the prototype for that instance. If the property does not exist there either, then the interpreter will continue up the prototype chain until it reaches the `Object.prototype` itself.
+
+When all possibilities are exhausted, the interpreter will throw an error.
+
+This means that if I add a property to an instance of an array, and that property has the same name as a property in the Array prototype, then my new property will override the prototype property.
+
+Similarly, properties in the Array prototype with the same name as properties in the Object prototype will override the Object prototype properties.
+
+This allows us to customize and reimplement functionality in when using inheritance.
+
+For example, the `Array()` object includes a `map` method:
+
+```sh
+> var a = new Array(1, 2, 3)
+  undefined
+> a.map
+  function map() { [native code] }
+> a.map(function(i) { return i * 2; })
+  [2, 4, 6]
+> a
+  [1, 2, 3]
+```
+
+If we create a property called `map` on our array `a`, then we can no longer access the prototype method:
+
+```sh
+> a.map = "hi!"
+  "hi!"
+> a.map(function(i) { return i * 2; })
+  TypeError: string is not a function
+```
+
+Bummer. Be careful that you don&apos;t do this by mistake!
+
+What if we wanted to *adapt* a method? For example, suppose for some reason we wanted to update the `map` method so that it printed out a message before completing the mapping. We could do this:
+
+```js
+
 ```
 
 ## A few more things about objects (before we get into the hard stuff)
